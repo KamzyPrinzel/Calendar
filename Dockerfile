@@ -4,7 +4,7 @@ RUN rm -rf /usr/share/nginx/html/*
 
 COPY . /usr/share/nginx/html
 
-RUN apt-get update && apt-get upgrade -y libxml2 && apt-get clean && rm -rf /var/lib/apt/list/*
+RUN apk update && apk upgrade -y libxml2 && apt-get clean && rm -rf /var/lib/apt/list/*
 
 EXPOSE 80
 
