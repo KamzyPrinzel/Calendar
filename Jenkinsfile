@@ -8,26 +8,22 @@ pipeline {
     stages {
         stage('Checkout GitHub repo') {
             steps {
-                git branch:'main', url: 'https://github.com/KamzyPrinzel/Calendar.git'
+                git branch: 'main', url: 'https://github.com/KamzyPrinzel/Calendar.git'
             }
         }
 
         stage('Build Docker image') {
             steps {
                 script {
-   		    sh '''
-       		        export DOCKER_BUILDKIT=1
-       		        docker build -t $IMAGE_NAME .
-   		       '''
-		}
-
+                    sh "docker build -t ${IMAGE_NAME} ."
+                }
             }
         }
 
         stage('Scan Docker image with Trivy') {
             steps {
                 script {
-                    sh 'trivy image $IMAGE_NAME || true'  // use `|| true` to prevent pipeline fail on scan issues
+                    sh "trivy image ${IMAGE_NAME} || true"
                 }
             }
         }
@@ -35,10 +31,12 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    sh """
-                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                        docker push $IMAGE_NAME
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh """
+                            echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
+                            docker push ${IMAGE_NAME}
+                        """
+                    }
                 }
             }
         }
