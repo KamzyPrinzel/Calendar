@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout GitHub repo') {
             steps {
-                git 'https://github.com/KamzyPrinzel/Calendar.git'
+                git branch:'main', url: 'https://github.com/KamzyPrinzel/Calendar.git'
             }
         }
 
