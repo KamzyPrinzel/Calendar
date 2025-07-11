@@ -4,11 +4,15 @@ gcloud container clusters create calendar-cluster \
   --enable-autorepair \
   --enable-autoupgrade
 
-gcloud container node-pools create secondary-pool \
+gcloud container node-pools create web-pool \
   --cluster=calendar-cluster \
   --zone=us-central1-a \
-  --machine-type=e2-small \
+  --machine-type=e2-medium \
   --disk-size=30GB \
   --enable-autoscaling \
   --min-nodes=1 \
   --max-nodes=3
+
+
+nodeSelector:
+  cloud.google.com/gke-nodepool: web-pool  
