@@ -6,8 +6,10 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout GitHub repo') {
             steps {
+                sh 'git config --global --add safe.directory $WORKSPACE'
                 git branch: 'main', url: 'https://github.com/KamzyPrinzel/Calendar.git'
             }
         }
@@ -23,7 +25,7 @@ pipeline {
         stage('Scan Docker image with Trivy') {
             steps {
                 script {
-                    sh "trivy image ${IMAGE_NAME} || true"
+                   sh "trivy image --exit-code 1 --severity CRITICAL ${IMAGE_NAME}"
                 }
             }
         }
