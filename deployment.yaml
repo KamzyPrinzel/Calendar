@@ -6,7 +6,7 @@ metadata:
     app: calendar
     environment: production
 spec:
-  replicas: 3
+  replicas: 6
   strategy:
     rollingUpdate:
       maxSurge: 1
