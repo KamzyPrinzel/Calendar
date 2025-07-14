@@ -1,6 +1,6 @@
 gcloud container clusters create calendar-cluster \
   --zone=us-central1-a \
-  --num-nodes=1 \
+  --num-nodes=4 \
   --enable-autorepair \
   --enable-autoupgrade
 
@@ -11,7 +11,7 @@ gcloud container node-pools create web-pool \
   --disk-size=30GB \
   --enable-autoscaling \
   --min-nodes=1 \
-  --max-nodes=3
+  --max-nodes=4
 
 
 nodeSelector:
