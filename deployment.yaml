@@ -2,8 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: calendar-app
+  labels:
+    app: calendar
+    environment: production
 spec:
   replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
   selector:
     matchLabels:
       app: calendar
@@ -11,29 +19,55 @@ spec:
     metadata:
       labels:
         app: calendar
+        version: "1.0"
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: web-pool
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - calendar
+              topologyKey: kubernetes.io/hostname
       containers:
       - name: calendar-app
-        image: prinzkay/calendar:1 
-        imagePullPolicy: Always    
+        image: prinzkay/calendar:1
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
+          name: http
+          protocol: TCP
         resources:
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
           requests:
             cpu: "100m"
             memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
         livenessProbe:
           httpGet:
             path: /
             port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /
             port: 80
           initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 101  # nginx user
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+      restartPolicy: Always
