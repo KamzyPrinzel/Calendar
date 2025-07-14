@@ -45,11 +45,11 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: "60m"
-            memory: "54Mi"
+            cpu: "30"
+            memory: "32Mi"
           limits:
-            cpu: "100m"
-            memory: "128Mi"
+            cpu: "50m"
+            memory: "64Mi"
         livenessProbe:
           httpGet:
             path: /
